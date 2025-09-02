@@ -1,0 +1,289 @@
+/* Dashboard Styles */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* Map Styles */
+#map {
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.leaflet-popup-content {
+    margin: 8px 12px;
+    line-height: 1.4;
+}
+
+/* Alert Styles */
+.alert-item {
+    border-left: 4px solid;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.alert-item.critical {
+    border-left-color: #dc3545;
+    background-color: #f8d7da;
+}
+
+.alert-item.high {
+    border-left-color: #fd7e14;
+    background-color: #ffeaa7;
+}
+
+.alert-item.medium {
+    border-left-color: #ffc107;
+    background-color: #fff3cd;
+}
+
+.alert-item.low {
+    border-left-color: #28a745;
+    background-color: #d4edda;
+}
+
+/* Earthquake List Styles */
+.earthquake-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.earthquake-item:last-child {
+    border-bottom: none;
+}
+
+.magnitude {
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    color: white;
+    font-size: 0.875rem;
+}
+
+.magnitude.low {
+    background-color: #28a745;
+}
+
+.magnitude.moderate {
+    background-color: #ffc107;
+}
+
+.magnitude.strong {
+    background-color: #fd7e14;
+}
+
+.magnitude.major {
+    background-color: #dc3545;
+}
+
+/* Prediction Result Styles */
+.prediction-result {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+}
+
+.risk-level {
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    margin: 0.5rem 0;
+}
+
+.risk-level.LOW {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.risk-level.MEDIUM {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.risk-level.HIGH {
+    background-color: #ffeaa7;
+    color: #856404;
+    border: 1px solid #fd7e14;
+}
+
+.risk-level.CRITICAL {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Weather Summary Styles */
+#weather-summary .row div {
+    padding: 0.5rem;
+}
+
+#weather-summary .text-muted {
+    font-size: 0.875rem;
+}
+
+/* Status Badge */
+#system-status {
+    font-size: 0.875rem;
+}
+
+#system-status.operational {
+    background-color: #28a745 !important;
+}
+
+#system-status.warning {
+    background-color: #ffc107 !important;
+}
+
+#system-status.error {
+    background-color: #dc3545 !important;
+}
+
+/* Loading Spinner */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    #map {
+        height: 300px !important;
+    }
+}
+
+/* Custom Map Markers */
+.earthquake-marker {
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.earthquake-marker.small {
+    background-color: #28a745;
+}
+
+.earthquake-marker.moderate {
+    background-color: #ffc107;
+}
+
+.earthquake-marker.strong {
+    background-color: #fd7e14;
+}
+
+.earthquake-marker.major {
+    background-color: #dc3545;
+}
+
+.flood-marker {
+    background-color: #007bff;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.alert-marker {
+    background-color: #dc3545;
+    border-radius: 0;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transform: rotate(45deg);
+}
+
+/* Form Styles */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn {
+    border-radius: 0.375rem;
+}
+
+/* Animation for new alerts */
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.new-alert {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Tooltip Styles */
+.tooltip {
+    font-size: 0.875rem;
+}
+
+/* Progress Bars for Risk Levels */
+.risk-progress {
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    background-color: #e9ecef;
+}
+
+.risk-progress .progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Data Table Styles */
+.data-table {
+    font-size: 0.875rem;
+}
+
+.data-table th {
+    background-color: #f8f9fa;
+    border-top: none;
+    font-weight: 600;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 1rem 0;
+}

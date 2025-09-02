@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Disaster Prediction Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; padding: 20px; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        .loading { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">🌍 Disaster Prediction Test</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>🌊 Flood Prediction</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary" onclick="testFloodPrediction()">
+                            Test Flood Prediction
+                        </button>
+                        <div id="floodLoading" class="loading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="floodResult"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>🏔️ Earthquake Prediction</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-warning" onclick="testEarthquakePrediction()">
+                            Test Earthquake Prediction
+                        </button>
+                        <div id="earthquakeLoading" class="loading">
+                            <div class="spinner-border text-warning" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="earthquakeResult"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>🔗 Quick Links</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="http://localhost:8000/dashboard/" class="btn btn-info me-2" target="_blank">
+                            Full Dashboard
+                        </a>
+                        <a href="http://localhost:8000/docs" class="btn btn-secondary me-2" target="_blank">
+                            API Documentation
+                        </a>
+                        <a href="http://localhost:8000/health" class="btn btn-success" target="_blank">
+                            Health Check
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testFloodPrediction() {
+            const loadingDiv = document.getElementById('floodLoading');
+            const resultDiv = document.getElementById('floodResult');
+            
+            loadingDiv.style.display = 'block';
+            resultDiv.innerHTML = '';
+            
+            const testData = {
+                latitude: 37.7749,
+                longitude: -122.4194,
+                temperature: 25,
+                humidity: 85,
+                precipitation_24h: 75,
+                precipitation_48h: 120,
+                wind_speed: 15,
+                water_level: 4.5,
+                river_flow: 350,
+                elevation: 45,
+                soil_type: "clay"
+            };
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/v1/predict/flood', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const riskColor = getRiskColor(result.risk_level);
+                    resultDiv.innerHTML = `
+                        <div class="result alert alert-${riskColor}">
+                            <h6>✅ Flood Prediction Result</h6>
+                            <p><strong>Risk Level:</strong> <span class="badge bg-${riskColor}">${result.risk_level}</span></p>
+                            <p><strong>Probability:</strong> ${(result.flood_probability * 100).toFixed(1)}%</p>
+                            <p><strong>Confidence:</strong> ${(result.confidence_score * 100).toFixed(1)}%</p>
+                            <p><strong>Location:</strong> ${result.latitude}, ${result.longitude}</p>
+                            ${result.factors && result.factors.length > 0 ? 
+                                '<p><strong>Factors:</strong> ' + result.factors.join(', ') + '</p>' 
+                                : ''}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="result alert alert-danger">❌ Error: ${result.detail}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result alert alert-danger">❌ Connection Error: ${error.message}</div>`;
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+        
+        async function testEarthquakePrediction() {
+            const loadingDiv = document.getElementById('earthquakeLoading');
+            const resultDiv = document.getElementById('earthquakeResult');
+            
+            loadingDiv.style.display = 'block';
+            resultDiv.innerHTML = '';
+            
+            const testData = {
+                latitude: 37.7749,
+                longitude: -122.4194,
+                recent_earthquakes: 8,
+                max_magnitude_30d: 5.2,
+                avg_magnitude: 3.8,
+                depth_avg: 8,
+                fault_distance: 15,
+                tectonic_activity: "high",
+                geological_stability: "moderate",
+                population_density: 1500
+            };
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/v1/predict/earthquake', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const riskColor = getRiskColor(result.risk_level);
+                    resultDiv.innerHTML = `
+                        <div class="result alert alert-${riskColor}">
+                            <h6>✅ Earthquake Prediction Result</h6>
+                            <p><strong>Risk Level:</strong> <span class="badge bg-${riskColor}">${result.risk_level}</span></p>
+                            <p><strong>Probability:</strong> ${(result.risk_probability * 100).toFixed(1)}%</p>
+                            <p><strong>Magnitude:</strong> M${result.estimated_magnitude}</p>
+                            <p><strong>Confidence:</strong> ${(result.confidence_score * 100).toFixed(1)}%</p>
+                            <p><strong>Location:</strong> ${result.latitude}, ${result.longitude}</p>
+                            ${result.factors && result.factors.length > 0 ? 
+                                '<p><strong>Factors:</strong> ' + result.factors.join(', ') + '</p>' 
+                                : ''}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="result alert alert-danger">❌ Error: ${result.detail}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result alert alert-danger">❌ Connection Error: ${error.message}</div>`;
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+        
+        function getRiskColor(riskLevel) {
+            switch(riskLevel) {
+                case 'LOW': return 'success';
+                case 'MEDIUM': return 'warning';
+                case 'HIGH': return 'danger';
+                case 'CRITICAL': return 'danger';
+                default: return 'secondary';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Management Dashboard</title>
+    
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="static/css/dashboard.css" />
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-alt"></i> Disaster Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#predictions">Predictions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#alerts">Alerts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#data">Data</a>
+                    </li>
+                </ul>
+                <div class="navbar-text">
+                    <span id="system-status" class="badge bg-success">
+                        <i class="fas fa-circle"></i> Operational
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-3">
+        <!-- Alert Banner -->
+        <div id="alert-banner" class="alert alert-warning alert-dismissible fade show d-none" role="alert">
+            <strong>Active Alert:</strong> <span id="alert-message"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Dashboard Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Active Alerts</h6>
+                                <h3 id="active-alerts-count">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Flood Predictions</h6>
+                                <h3 id="flood-predictions-count">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-water fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Earthquake Risk</h6>
+                                <h3 id="earthquake-predictions-count">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-mountain fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Data Sources</h6>
+                                <h3 id="data-sources-count">3</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-database fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <div class="row">
+            <!-- Map Section -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-map"></i> Interactive Map
+                        </h5>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleLayer('earthquakes')">
+                                Earthquakes
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleLayer('floods')">
+                                Floods
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleLayer('alerts')">
+                                Alerts
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="map" style="height: 500px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Recent Alerts -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-bell"></i> Recent Alerts
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="recent-alerts" class="list-group list-group-flush">
+                            <!-- Alerts will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather Summary -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-cloud"></i> Weather Summary
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="weather-summary">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <small class="text-muted">Temperature</small>
+                                    <div id="avg-temperature">--°C</div>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Humidity</small>
+                                    <div id="avg-humidity">--%</div>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-2">
+                                <div class="col-6">
+                                    <small class="text-muted">Precipitation</small>
+                                    <div id="total-precipitation">-- mm</div>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Wind Speed</small>
+                                    <div id="max-wind-speed">-- m/s</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Seismic Activity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-seismograph"></i> Recent Earthquakes
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="recent-earthquakes" class="list-group list-group-flush">
+                            <!-- Earthquakes will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prediction Tools -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-water"></i> Flood Prediction
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="flood-prediction-form">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="flood-lat" class="form-label">Latitude</label>
+                                        <input type="number" class="form-control" id="flood-lat" step="0.000001" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="flood-lon" class="form-label">Longitude</label>
+                                        <input type="number" class="form-control" id="flood-lon" step="0.000001" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="flood-hours" class="form-label">Hours Ahead</label>
+                                <select class="form-select" id="flood-hours">
+                                    <option value="6">6 hours</option>
+                                    <option value="12">12 hours</option>
+                                    <option value="24" selected>24 hours</option>
+                                    <option value="48">48 hours</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-chart-line"></i> Generate Prediction
+                            </button>
+                        </form>
+                        <div id="flood-prediction-result" class="mt-3 d-none">
+                            <!-- Results will be shown here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-mountain"></i> Earthquake Risk Assessment
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="earthquake-prediction-form">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="earthquake-lat" class="form-label">Latitude</label>
+                                        <input type="number" class="form-control" id="earthquake-lat" step="0.000001" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="earthquake-lon" class="form-label">Longitude</label>
+                                        <input type="number" class="form-control" id="earthquake-lon" step="0.000001" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="earthquake-hours" class="form-label">Hours Ahead</label>
+                                <select class="form-select" id="earthquake-hours">
+                                    <option value="24" selected>24 hours</option>
+                                    <option value="72">72 hours</option>
+                                    <option value="168">1 week</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-chart-line"></i> Assess Risk
+                            </button>
+                        </form>
+                        <div id="earthquake-prediction-result" class="mt-3 d-none">
+                            <!-- Results will be shown here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="static/js/dashboard.js"></script>
+</body>
+</html>
